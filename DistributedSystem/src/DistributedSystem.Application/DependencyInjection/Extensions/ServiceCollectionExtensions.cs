@@ -13,7 +13,7 @@ namespace DistributedSystem.Application.DependencyInjection.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddConfigureMediart(this IServiceCollection services)
+        public static IServiceCollection AddConfigureMediartApplication(this IServiceCollection services)
         {
 
             return services
@@ -24,7 +24,7 @@ namespace DistributedSystem.Application.DependencyInjection.Extensions
                 .AddValidatorsFromAssembly(Contract.AssemblyReference.Assembly, includeInternalTypes: true)
                 ;
         }
-        public static IServiceCollection AddConfigureAutoMapper(this IServiceCollection services)
+        public static IServiceCollection AddConfigureAutoMapperApplication(this IServiceCollection services)
         {
 
             return services

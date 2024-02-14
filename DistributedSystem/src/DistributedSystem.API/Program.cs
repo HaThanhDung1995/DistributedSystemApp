@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = new ConfigurationBuilder()
                       .AddJsonFile("appsettings.json")
                       .Build();
-// Serilog
+#region Serilog
 Log.Logger = new LoggerConfiguration().ReadFrom
     .Configuration(configuration)
     .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", theme: SeriLogCustomThemes.Theme1())
@@ -23,27 +23,47 @@ builder.Logging
     .AddSerilog();
 
 builder.Host.UseSerilog();
+#endregion
+
+#region Infrastructure
 builder.Services.AddServicesInfrastructure();
 builder.Services.AddRedisInfrastructure(builder.Configuration);
-builder.Services.AddJwtAuthenticationAPI(builder.Configuration);
-builder.Services.AddConfigureMediart();
-builder.Services.AddConfigureAutoMapper();
-//Middleware
-builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-builder.Services.AddInterceptorPersistence();
-builder.Services.ConfigureSqlServerRetryOptionsPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
-builder.Services.AddSqlServerPersistence();
-builder.Services.AddRepositoryPersistence();
-//Carter
-builder.Services.AddCarter();
+builder.Services.AddMasstransitRabbitMQInfrastructure(builder.Configuration);
+builder.Services.AddQuartzInfrastructure();
+builder.Services.AddMediatRInfrastructure();
+#endregion
 
-//Swagger
+#region Swagger
 builder.Services
     .AddSwaggerGenNewtonsoftSupport()
     .AddFluentValidationRulesToSwagger()
     .AddEndpointsApiExplorer()
     .AddSwagger()
     ;
+builder.Services.AddJwtAuthenticationAPI(builder.Configuration);
+#endregion
+
+#region Application
+builder.Services.AddConfigureMediartApplication();
+builder.Services.AddConfigureAutoMapperApplication();
+#endregion
+
+#region Middleware
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+#endregion
+
+#region Persistence
+builder.Services.AddInterceptorPersistence();
+builder.Services.ConfigureSqlServerRetryOptionsPersistence(builder.Configuration.GetSection(nameof(SqlServerRetryOptions)));
+builder.Services.AddSqlServerPersistence();
+builder.Services.AddRepositoryPersistence();
+#endregion
+
+#region Carter
+builder.Services.AddCarter();
+#endregion
+
+#region Api Versioning
 builder.Services
     .AddApiVersioning(options => options.ReportApiVersions = true)
     .AddApiExplorer(options =>
@@ -51,6 +71,7 @@ builder.Services
         options.GroupNameFormat = "'v'VVV";
         options.SubstituteApiVersionInUrl = true;
     });
+#endregion
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -63,8 +84,6 @@ if (app.Environment.IsDevelopment())
 {
     app.ConfigureSwagger();
 }
-
-
 
 try
 {

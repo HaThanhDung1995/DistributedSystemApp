@@ -1,5 +1,6 @@
 ﻿using DistributedSystem.API.DependencyInjection.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
 

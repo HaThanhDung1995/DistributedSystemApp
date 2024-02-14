@@ -29,7 +29,7 @@ namespace DistributedSystem.API.Attributes
                 {
                     context.Response.Headers.Add("IS-TOKEN-REVOKED", "true");
                     context.Fail("Authentication fail. Token has been revoked!");
-                    throw new IdentityException.TokenException("Revoked");
+                    throw new IdentityException.TokenException("Your token is revoked");
                 }
             }
             else
