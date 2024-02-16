@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace DistributedSystem.Contract.Abstractions.Messages
 {
     [ExcludeFromTopology]
-    public interface IDomainEvent //: INotification
+    public interface IDomainEvent 
     {
-        public Guid Id { get; init; }
+        public Guid IdEvent { get; init; }
     }
 }

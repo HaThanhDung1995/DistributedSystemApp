@@ -1,4 +1,6 @@
 ﻿using DistributedSystem.Contract.Services.V1.Product;
+using DistributedSystem.Infrastructure.Consumer.Abstractions.Repositories;
+using DistributedSystem.Infrastructure.Consumer.Models;
 using DistributedSystem.Infrastructure.Consumers.Abstractions.Messages;
 using MediatR;
 using System;
@@ -13,22 +15,22 @@ namespace DistributedSystem.Infrastructure.Consumer.MessageBus.Consumers.Events
     {
         public class ProductCreatedConsumer : Consumer<DomainEvent.ProductCreated>
         {
-            public ProductCreatedConsumer(ISender sender) : base(sender)
+            public ProductCreatedConsumer(ISender sender, IMongoRepository<EventProjection> eventRepository) : base(sender, eventRepository)
             {
             }
         }
 
         public class ProductDeletedConsumer : Consumer<DomainEvent.ProductDeleted>
         {
-            public ProductDeletedConsumer(ISender sender) : base(sender)
+            public ProductDeletedConsumer(ISender sender, IMongoRepository<EventProjection> eventRepository) : base(sender, eventRepository)
             {
             }
         }
 
         public class ProductUpdatedConsumer : Consumer<DomainEvent.ProductUpdated>
         {
-            public ProductUpdatedConsumer(ISender sender) : base(sender)
-            {
+            public ProductUpdatedConsumer(ISender sender, IMongoRepository<EventProjection> eventRepository) : base(sender, eventRepository)
+            {   
             }
         }
     }

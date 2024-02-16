@@ -31,6 +31,7 @@ builder.Services.AddRedisInfrastructure(builder.Configuration);
 builder.Services.AddMasstransitRabbitMQInfrastructure(builder.Configuration);
 builder.Services.AddQuartzInfrastructure();
 builder.Services.AddMediatRInfrastructure();
+builder.Services.ConfigureServicesInfrastructure(builder.Configuration);
 #endregion
 
 #region Swagger

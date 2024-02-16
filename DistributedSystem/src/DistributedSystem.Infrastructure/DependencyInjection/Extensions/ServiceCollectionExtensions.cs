@@ -3,11 +3,14 @@ using DistributedSystem.Contract.JsonConverters;
 using DistributedSystem.Infrastructure.Authentication;
 using DistributedSystem.Infrastructure.BackgroundJobs;
 using DistributedSystem.Infrastructure.Caching;
+using DistributedSystem.Infrastructure.Consumer.Abstractions.Repositories;
+using DistributedSystem.Infrastructure.Consumer.Repositories;
 using DistributedSystem.Infrastructure.DependencyInjection.Options;
 using DistributedSystem.Infrastructure.PipeObservers;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Quartz;
 using System;
@@ -26,6 +29,15 @@ namespace DistributedSystem.Infrastructure.DependencyInjection.Extensions
             .AddTransient<IJwtTokenService, JwtTokenService>()
             .AddTransient<ICacheService, CacheService>()
             ;
+        public static void ConfigureServicesInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<MongoDbSettings>(configuration.GetSection(nameof(MongoDbSettings)));
+
+            services.AddSingleton<IMongoDbSettings>(serviceProvider =>
+                serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+
+            services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
+        }
         public static void AddRedisInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddStackExchangeRedisCache(redisOptions =>
@@ -111,7 +123,7 @@ namespace DistributedSystem.Infrastructure.DependencyInjection.Extensions
                             trigger.ForJob(jobKey)
                                 .WithSimpleSchedule(
                                     schedule =>
-                                        schedule.WithIntervalInSeconds(100)
+                                        schedule.WithInterval(TimeSpan.FromMicroseconds(100))
                                             .RepeatForever()));
 
                 configure.UseMicrosoftDependencyInjectionJobFactory();
@@ -121,5 +133,7 @@ namespace DistributedSystem.Infrastructure.DependencyInjection.Extensions
         }
         public static void AddMediatRInfrastructure(this IServiceCollection services)
         => services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+
+        
     }
 }
